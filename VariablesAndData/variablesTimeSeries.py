@@ -60,142 +60,66 @@ def callVariables(trainData, trainDataL):
     centerL1 = variable.Variable("CL1", data_label="CL1", partitioner=Grid.GridPartitioner, npart=numpart,
                                  data=trainDataL)
 
-    center_futureL = variable.Variable("CFL", data_label="CL+1", partitioner=Grid.GridPartitioner, npart=numpart,
-                                       data=trainDataL)
+    # center_futureL = variable.Variable("CFL", data_label="CL+1", partitioner=Grid.GridPartitioner, npart=numpart,
+    #                                    data=trainDataL)
 
-    center_future = variable.Variable("CF", data_label="C+1", partitioner=Grid.GridPartitioner, npart=numpart,
-                                      data=trainData)
+    # center_future = variable.Variable("CF", data_label="C+1", partitioner=Grid.GridPartitioner, npart=numpart,
+    #                                   data=trainData)
 
     joinVariables = [norte1, norteL, norteO,
                      sul1, sulL, sulO,
                      leste1,
                      oeste1,
-                     center1,
-                     center_future]
+                     center1]
 
     joinVariablesL = [norteL1, norteLL, norteLO,
                       sulL1, sulLL, sulLO,
-                      lesteL1, oesteL1, centerL1,
-                      center_futureL]
+                      lesteL1, oesteL1, centerL1]
 
     return joinVariables, joinVariablesL
 
 
-def callVariables2(trainData1, trainData2):
-    sp = {'names': ['A', 'B', 'C', 'D']}
+def callVariables_nEWdELHI(tD, transf):
+    numpart = 6
+    joinVariables = []
 
-    numpart = 4
+    for trainData1 in tD:
+        V1 = variable.Variable(name='V1', data_label='V1', partitioner=Grid.GridPartitioner, npart=numpart,
+                               data=pd.DataFrame(trainData1), transformation=transf)
 
-    norte1 = variable.Variable(name='N1', data_label='N1', partitioner=Grid.GridPartitioner, npart=numpart,
-                               data=pd.DataFrame(trainData1[0]), partitioner_specific=sp)
+        V2 = variable.Variable("V2", data_label="V2", partitioner=Grid.GridPartitioner, npart=numpart,
+                               data=pd.DataFrame(trainData1), transformation=transf)
 
-    norte3 = variable.Variable("N3", data_label="N3", partitioner=Grid.GridPartitioner, npart=numpart,
-                               data=pd.DataFrame(trainData1[1]), partitioner_specific=sp)
+        V3 = variable.Variable("V3", data_label="V3", partitioner=Grid.GridPartitioner, npart=numpart,
+                               data=pd.DataFrame(trainData1), transformation=transf)
 
-    sul1 = variable.Variable("S1", data_label="S1", partitioner=Grid.GridPartitioner, npart=numpart,
-                             data=pd.DataFrame(trainData1[2]), partitioner_specific=sp)
+        V4 = variable.Variable("V4", data_label="V4", partitioner=Grid.GridPartitioner, npart=numpart,
+                               data=pd.DataFrame(trainData1), transformation=transf)
 
-    sul3 = variable.Variable("S3", data_label="S3", partitioner=Grid.GridPartitioner, npart=numpart,
-                             data=pd.DataFrame(trainData1[3]), partitioner_specific=sp)
+        V5 = variable.Variable("V5", data_label="V5", partitioner=Grid.GridPartitioner, npart=numpart,
+                               data=pd.DataFrame(trainData1), transformation=transf)
 
-    leste1 = variable.Variable("L1", data_label="L1", partitioner=Grid.GridPartitioner, npart=numpart,
-                               data=pd.DataFrame(trainData1[4]), partitioner_specific=sp)
+        V6 = variable.Variable("V6", data_label="V6", partitioner=Grid.GridPartitioner, npart=numpart,
+                               data=pd.DataFrame(trainData1), transformation=transf)
 
-    leste3 = variable.Variable("L3", data_label="L3", partitioner=Grid.GridPartitioner, npart=numpart,
-                               data=pd.DataFrame(trainData1[5]), partitioner_specific=sp)
+        V7 = variable.Variable("V7", data_label="V7", partitioner=Grid.GridPartitioner, npart=numpart,
+                               data=pd.DataFrame(trainData1), transformation=transf)
 
-    oeste1 = variable.Variable("O1", data_label="O1", partitioner=Grid.GridPartitioner, npart=numpart,
-                               data=pd.DataFrame(trainData1[6]), partitioner_specific=sp)
+        V8 = variable.Variable(name='V8', data_label='V8', partitioner=Grid.GridPartitioner, npart=numpart,
+                               data=pd.DataFrame(trainData1), transformation=transf)
 
-    oeste3 = variable.Variable("O3", data_label="O3", partitioner=Grid.GridPartitioner, npart=numpart,
-                               data=pd.DataFrame(trainData1[7]), partitioner_specific=sp)
+        V9 = variable.Variable(name='V9', data_label='V9', partitioner=Grid.GridPartitioner, npart=numpart,
+                               data=pd.DataFrame(trainData1), transformation=transf)
 
-    center1 = variable.Variable("C1", data_label="C1", partitioner=Grid.GridPartitioner, npart=numpart,
-                                data=pd.DataFrame(trainData1[8]), partitioner_specific=sp)
+        V10 = variable.Variable(name='V10', data_label='V10', partitioner=Grid.GridPartitioner, npart=numpart,
+                                data=pd.DataFrame(trainData1), transformation=transf)
 
-    center3 = variable.Variable("C3", data_label="C3", partitioner=Grid.GridPartitioner, npart=numpart,
-                                data=pd.DataFrame(trainData1[9]), partitioner_specific=sp)
+        V11 = variable.Variable(name='V11', data_label='V11', partitioner=Grid.GridPartitioner, npart=numpart,
+                                data=pd.DataFrame(trainData1), transformation=transf)
 
-    # norteL1 = variable.Variable("NL1", data_label="NL1", partitioner=Grid.GridPartitioner, npart=numpart,
-    #                             data=pd.DataFrame(trainData1[10]), partitioner_specific=sp)
-    #
-    # sulL1 = variable.Variable("SL1", data_label="SL1", partitioner=Grid.GridPartitioner, npart=numpart,
-    #                           data=pd.DataFrame(trainData1[11]), partitioner_specific=sp)
-    #
-    # lesteL1 = variable.Variable("LL1", data_label="LL1", partitioner=Grid.GridPartitioner, npart=numpart,
-    #                             data=pd.DataFrame(trainData1[12]), partitioner_specific=sp)
-    #
-    # oesteL1 = variable.Variable("OL1", data_label="OL1", partitioner=Grid.GridPartitioner, npart=numpart,
-    #                             data=pd.DataFrame(trainData1[13]), partitioner_specific=sp)
-    #
-    # centerL1 = variable.Variable("CL1", data_label="CL1", partitioner=Grid.GridPartitioner, npart=numpart,
-    #                              data=pd.DataFrame(trainData1[14]), partitioner_specific=sp)
 
-    center_future = variable.Variable("CF", data_label="C+1", partitioner=Grid.GridPartitioner, npart=numpart,
-                                      data=pd.DataFrame(trainData1[10]), partitioner_specific=sp)
+        aux = [V1, V2, V3, V4, V5, V6, V7, V8, V9, V10, V11]
 
-    joinVariables1 = [norte1, norte3,
-                      sul1, sul3,
-                      leste1, leste3,
-                      oeste1, oeste3,
-                      center1, center3,
-                      # norteL1, sulL1, lesteL1, oesteL1, centerL1,
-                      center_future]
+        joinVariables.append(aux)
 
-    norte1C = variable.Variable(name='N1C', data_label='N1C', partitioner=Grid.GridPartitioner, npart=numpart,
-                                data=pd.DataFrame(trainData2[0]), partitioner_specific=sp)
-
-    norte3C = variable.Variable(name="N3C", data_label="N3C", partitioner=Grid.GridPartitioner, npart=numpart,
-                                data=pd.DataFrame(trainData2[1]), partitioner_specific=sp)
-
-    sul1C = variable.Variable(name="S1C", data_label="S1C", partitioner=Grid.GridPartitioner, npart=numpart,
-                              data=pd.DataFrame(trainData2[2]), partitioner_specific=sp)
-
-    sul3C = variable.Variable(name="S3C", data_label="S3C", partitioner=Grid.GridPartitioner, npart=numpart,
-                              data=pd.DataFrame(trainData2[3]), partitioner_specific=sp)
-
-    leste1C = variable.Variable(name="L1C", data_label="L1C", partitioner=Grid.GridPartitioner, npart=numpart,
-                                data=pd.DataFrame(trainData2[4]), partitioner_specific=sp)
-
-    leste3C = variable.Variable(name="L3C", data_label="L3C", partitioner=Grid.GridPartitioner, npart=numpart,
-                                data=pd.DataFrame(trainData2[5]), partitioner_specific=sp)
-
-    oeste1C = variable.Variable(name="O1C", data_label="O1C", partitioner=Grid.GridPartitioner, npart=numpart,
-                                data=pd.DataFrame(trainData2[6]), partitioner_specific=sp)
-
-    oeste3C = variable.Variable(name="O3C", data_label="O3C", partitioner=Grid.GridPartitioner, npart=numpart,
-                                data=pd.DataFrame(trainData2[7]), partitioner_specific=sp)
-
-    center1C = variable.Variable(name="C1C", data_label="C1C", partitioner=Grid.GridPartitioner, npart=numpart,
-                                 data=pd.DataFrame(trainData2[8]), partitioner_specific=sp)
-
-    center3C = variable.Variable(name="C3C", data_label="C3C", partitioner=Grid.GridPartitioner, npart=numpart,
-                                 data=pd.DataFrame(trainData2[9]), partitioner_specific=sp)
-
-    # norteL1C = variable.Variable(name="NL1C", data_label="NL1C", partitioner=Grid.GridPartitioner, npart=numpart,
-    #                              data=pd.DataFrame(trainData2[10]), partitioner_specific=sp)
-    #
-    # sulL1C = variable.Variable(name="SL1C", data_label="SL1C", partitioner=Grid.GridPartitioner, npart=numpart,
-    #                            data=pd.DataFrame(trainData2[11]), partitioner_specific=sp)
-    #
-    # lesteL1C = variable.Variable(name="LL1C", data_label="LL1C", partitioner=Grid.GridPartitioner, npart=numpart,
-    #                              data=pd.DataFrame(trainData2[12]), partitioner_specific=sp)
-    #
-    # oesteL1C = variable.Variable(name="OL1C", data_label="OL1C", partitioner=Grid.GridPartitioner, npart=numpart,
-    #                              data=pd.DataFrame(trainData2[13]), partitioner_specific=sp)
-    #
-    # centerL1C = variable.Variable(name="CL1C", data_label="CL1C", partitioner=Grid.GridPartitioner, npart=numpart,
-    #                               data=pd.DataFrame(trainData2[14]), partitioner_specific=sp)
-
-    center_futureC = variable.Variable(name="CFC", data_label="C+1C", partitioner=Grid.GridPartitioner, npart=numpart,
-                                       data=pd.DataFrame(trainData2[10]), partitioner_specific=sp)
-
-    joinVariables2 = [norte1C, norte3C,
-                      sul1C, sul3C,
-                      leste1C, leste3C,
-                      oeste1C, oeste3C,
-                      center1C, center3C,
-                      # norteL1C, sulL1C, lesteL1C, oesteL1C, centerL1C,
-                      center_futureC]
-
-    return joinVariables1, joinVariables2
+    return joinVariables

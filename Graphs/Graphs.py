@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from osgeo import gdal
 
 
 def graphCompare(previsao_data, previsao_datal, historical_data, historical_data_larvas, start_day, end_simulation):
@@ -45,23 +46,16 @@ def graphCompare(previsao_data, previsao_datal, historical_data, historical_data
     plt.ylabel('Number of individuals')
     plt.show()
 
-    return na_values2, na_values, na_values2L, na_valuesL
+    return na_values2, na_values #, na_values2L, na_valuesL
 
-def graph(dataset):
 
-    # ver série temporal das variaveis...
+def exportPredicted(predicted, outFileName, col, row, ds_lc1):
+    driver = gdal.GetDriverByName("GTiff")
+    outdata = driver.Create(outFileName, col, row, 1, gdal.GDT_UInt16)  # option: GDT_UInt16, GDT_Float32
+    outdata.SetGeoTransform(ds_lc1.GetGeoTransform())
+    outdata.SetProjection(ds_lc1.GetProjection())
+    outdata.GetRasterBand(1).WriteArray(predicted)
+    outdata.GetRasterBand(1).SetNoDataValue(0)
+    outdata.FlushCache()
+    outdata = None
 
-    # na_values = []
-    # for k in range(r):
-    #     na_values.append(0)
-    #     for i in range(30):
-    #         for j in range(30):
-    #             na_values[k] = na_values[k] + dataset.iloc
-    #
-    # plt.plot(range(r), na_values2, label='Preditec')
-    # plt.plot(range(r), na_values, 'g--', label='Actual')
-    # plt.legend(loc="lower right")
-    # plt.xlabel('Time t (day unit)')
-    # plt.ylabel('Number of individuals')
-    # plt.show()
-    return

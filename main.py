@@ -38,19 +38,17 @@ if __name__ == '__main__':
     mtempL.fit(train_dataL)
 
     print("7 - Prediction")
-    predicted_data, predicted_datal = cellAutomationSimulation.caSimulationpyFTS(historical_data,
-                                                                                 historical_data_larvas,
-                                                                                 mtemp, mtempL,
-                                                                                 start_day=730,
-                                                                                 end_simulation=1730)
+    predicted_data, previsao_datal = cellAutomationSimulation.caSimulationpyFTS(historical_data, historical_data_larvas,
+                                                                mtemp,
+                                                                mtempL,
+                                                                start_day=730,
+                                                                end_simulation=1730)
 
     print("8 - Graph:")
-    predicted_data, actual_data, predicted_datal, actual_datal = Graphs.graphCompare(predicted_data, predicted_datal,
-                                                                                     historical_data,
-                                                                                     historical_data_larvas,
-                                                                                     start_day=730,
-                                                                                     end_simulation=1730)
+    predicted_data, actual_data = Graphs.graphCompare(predicted_data, previsao_datal, historical_data,
+                                                      historical_data_larvas,
+                                                      start_day=730,
+                                                      end_simulation=1730)
 
     print("9 - Metrics:")
-    Metrics.metrics(predicted_data, actual_data, predicted_datal, actual_datal)
-
+    Metrics.metrics(predicted_data, actual_data)

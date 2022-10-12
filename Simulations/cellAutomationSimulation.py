@@ -1,9 +1,13 @@
 import sys
+from copy import deepcopy
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pygame
 import pandas as pd
 from Rules.transitionCARules import simulateDemography, simulate_Dispersion2
-from Simulations.nextStageSimulation import nextState_Predict, nextState_Predict2
+from Simulations.nextStageSimulation import nextState_Predict, nextState_Predict_newdelhi, nextState_Predict_PYGAME
+from osgeo import gdal
 
 rows = 32
 cols = 32
@@ -124,14 +128,16 @@ def caSimulationpyFTS(historical_data, historical_data_larvas, mtemp1, mtempL, s
         for i in range(cols):
             for j in range(rows):
                 if start_day != end_simulation and i != 0 and i != 29 and j != 0 and j != 29:
-                    future_value, future_valuel = nextState_Predict(historical_data,
-                                                                    historical_data_larvas,
+                    future_value, future_valuel = nextState_Predict(historical_data,historical_data_larvas,
                                                                     start_day,
                                                                     i, j,
-                                                                    mtemp1,
-                                                                    mtempL)  # Pego a base de teste fuzzifico e faço a previsão de t+1
+                                                                    mtemp1, mtempL)  # Pego a base de teste fuzzifico e faço a previsão de t+1
                     new_grid[i][j] = future_value[0]
                     new_gridl[i][j] = future_valuel[0]
+
+                if i == 0 and i == 29 and j == 0 and j == 29:
+                    new_grid[i][j] = historical_data[start_day][i][j]
+                    new_gridl[i][j] = historical_data_larvas[start_day][i][j]
 
         previsao_data.append(new_grid)
         previsao_datal.append(new_gridl)
@@ -337,3 +343,124 @@ def read_Data():
             aux.append(linha)
 
     return hd, hdl
+
+
+def caSimulationNewDelhi(actual, future, rows, cols, mtemp, vedic):
+    predicted = deepcopy(actual)
+    k = 0
+
+    for i in range(rows):
+        print(i)
+        for j in range(cols):
+            if i != 0 and j != 0 and i != rows - 1 and j != cols - 1:
+                future_value = nextState_Predict_newdelhi(actual, future,
+                                                          i, j,
+                                                          mtemp, vedic,
+                                                          k)  # Pego a base de teste fuzzifico e faço a previsão de t+1
+                predicted[i, j] = future_value  # [0]
+
+    return predicted
+
+
+def caSimulationpyFTS_PYGAME_SIMU(historical_data, historical_data_larvas, mtemp1, mtempL, start_day, end_simulation):
+    pygame.init()
+    # Create the screen
+    size = (width, height) = 300, 300
+    screen = pygame.display.set_mode(size)
+    clock = pygame.time.Clock()
+    s = 10
+    cols, rows = int(screen.get_width() / s), int(screen.get_height() / s)
+
+    # Previsão
+    done = False
+
+    previsao_data = []  # armazenamento da previsão
+    previsao_datal = []  # armazenamento da previsão
+
+    new_grid = []
+    for i in range(cols):
+        list.append(new_grid, [0] * rows)
+
+    new_gridl = []
+    for i in range(cols):
+        list.append(new_gridl, [0] * rows)
+
+    while not done:
+        print(start_day)
+        if start_day == end_simulation:
+            done = True
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        screen.fill((255, 255, 255))
+
+        # Antes de zerar, pinto as cells
+        for i in range(cols):  # 30
+            for j in range(rows):  # 30
+                x = i * s
+                y = j * s
+
+                degree = new_grid[i][j]/5
+                pygame.draw.rect(screen, (250 + degree, 250 - (degree*250), 190 - (degree*190)), (x, y, s, s))  # branco
+                pygame.draw.line(screen, (250 + degree, 250 - (degree*250), 190 - (degree*190)), (x, y), (x, height))
+                pygame.draw.line(screen, (250 + degree, 250 - (degree*250), 190 - (degree*190)), (x, y), (width, y))
+
+                # if new_grid[i][j] <= 1:
+                #     pygame.draw.rect(screen, (228, 216, 161), (x, y, s, s))  # branco
+                # if 1 < new_grid[i][j] <= 3:
+                #     pygame.draw.rect(screen, (236, 151, 51), (x, y, s, s))  # laranja
+                # if 3 < new_grid[i][j] <= 5:
+                #     pygame.draw.rect(screen, (255, 0, 0), (x, y, s, s))  # red
+                # if new_grid[i][j] == 0:
+                #     pygame.draw.rect(screen, (249, 249, 195), (x, y, s, s))  # branco
+                # if new_grid[i][j] == 1:
+                #     pygame.draw.rect(screen, (242, 220, 139), (x, y, s, s))  # laranja
+                # if new_grid[i][j] == 2:
+                #     pygame.draw.rect(screen, (243, 188, 86), (x, y, s, s))  # laranja
+                # if new_grid[i][j] == 3:
+                #     pygame.draw.rect(screen, (246, 150, 39), (x, y, s, s))  # laranja
+                # if new_grid[i][j] == 4:
+                #     pygame.draw.rect(screen, (251, 104, 0), (x, y, s, s))  # laranja
+                # if new_grid[i][j] == 5:
+                #     pygame.draw.rect(screen, (255, 0, 0), (x, y, s, s))  # laranja
+                # pygame.draw.line(surface, color, start_pos, end_pos)
+                # pygame.draw.line(screen, (192, 192, 192), (x, y), (x, height))
+                # pygame.draw.line(screen, (192, 192, 192), (x, y), (width, y))
+
+        pygame.display.flip()
+        pygame.image.save(screen, "screenshot-day-" + str(start_day) + ".jpg")
+
+        new_grid = []
+        for i in range(cols):
+            list.append(new_grid, [0] * rows)
+
+        new_gridl = []
+        for i in range(cols):
+            list.append(new_gridl, [0] * rows)
+
+        for i in range(cols):
+            for j in range(rows):
+                if start_day != end_simulation and i != 0 and i != 29 and j != 0 and j != 29:
+                    future_value, future_valuel = nextState_Predict(historical_data,
+                                                                    historical_data_larvas,
+                                                                    start_day,
+                                                                    i, j,
+                                                                    mtemp1,
+                                                                    mtempL)  # Pego a base de teste fuzzifico e faço a previsão de t+1
+
+                    new_grid[i][j] = future_value[0]
+                    new_gridl[i][j] = future_valuel[0]
+
+                if i == 0 or i == 29 or j == 0 or j == 29:
+                    new_grid[i][j] = historical_data[start_day][i][j]
+                    new_gridl[i][j] = historical_data_larvas[start_day][i][j]
+
+        previsao_data.append(new_grid)
+        previsao_datal.append(new_gridl)
+
+        start_day = start_day + 1
+
+    return previsao_data, previsao_datal
