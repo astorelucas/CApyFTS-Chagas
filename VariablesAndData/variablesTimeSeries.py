@@ -114,11 +114,7 @@ def callVariables_nEWdELHI(tD, transf):
         V10 = variable.Variable(name='V10', data_label='V10', partitioner=Grid.GridPartitioner, npart=numpart,
                                 data=pd.DataFrame(trainData1), transformation=transf)
 
-        V11 = variable.Variable(name='V11', data_label='V11', partitioner=Grid.GridPartitioner, npart=numpart,
-                                data=pd.DataFrame(trainData1), transformation=transf)
-
-
-        aux = [V1, V2, V3, V4, V5, V6, V7, V8, V9, V10, V11]
+        aux = [V1, V2, V3, V4, V5, V6, V7, V8, V9, V10]
 
         joinVariables.append(aux)
 

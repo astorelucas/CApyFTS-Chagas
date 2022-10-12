@@ -40,7 +40,7 @@ def nextState_Predict(grid, gridL, k, i, j, mtemp, mtempL):
     return future_value, future_valuel
 
 
-def nextState_Predict_newdelhi(grid, gridf, i, j, mtemp, vedic, k):
+def nextState_Predict_newdelhi(grid, i, j, mtemp, vedic, k):
     cd = np.array([[grid[i - 1, j],
                     grid[i + 1, j],
                     grid[i, j + 1],
@@ -50,8 +50,7 @@ def nextState_Predict_newdelhi(grid, gridf, i, j, mtemp, vedic, k):
                     vedic[k][1],  # proad
                     vedic[k][2],  # restricted
                     vedic[k][3],  # ppop
-                    vedic[k][4],  # pslope
-                    gridf[i, j]  # future
+                    vedic[k][4]  # pslope
                     ]])
     k = k + 1
 
@@ -64,7 +63,7 @@ def nextState_Predict_newdelhi(grid, gridf, i, j, mtemp, vedic, k):
     # rules = [pactualNorte, pactualSul, pactualLeste, pactualOeste, pactual,
     #          pcbd, proad, prestricted, ppop, pslope, pfuture]
 
-    df = pd.DataFrame(cd, columns=['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10', 'V11'])
+    df = pd.DataFrame(cd, columns=['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10'])
 
     if i < 500 and j < 500:
         future_value = mtemp[1].predict(df)
@@ -74,12 +73,6 @@ def nextState_Predict_newdelhi(grid, gridf, i, j, mtemp, vedic, k):
         future_value = mtemp[2].predict(df)
     if i >= 500 and j >= 500:
         future_value = mtemp[3].predict(df)
-
-    # future_value = mtemp.predict(df, steps_ahead=1)
-
-    # forecast_df = pd.DataFrame(data=forecast, columns=test_df.columns)
-
-    # future_value = mtemp.predict(values[:1])
 
     return future_value
 

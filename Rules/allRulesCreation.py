@@ -174,10 +174,9 @@ def allRulesCreationNewDeli():
     # Input land cover GeoTIFF for two time period
     file1 = "actual_1989_50.tif"
     file2 = "actual_1994_50.tif"
-    # file3 = "actual_1999_50.tif"
-    # file3 = "actual_2004_50.tif"
+
+    aux = "actual_2009_50.tif"
     file3 = "actual_2014_50.tif"
-    # file3 = "actual_2014_50.tif"
 
     # Input all the parameters
     cbd = "cbddist_50.tif"
@@ -198,12 +197,10 @@ def allRulesCreationNewDeli():
         return (dataSource, band)
 
     # mapas
-    ds_lc1, arr_lc1 = readraster(file1)  # actual - 1989
-    ds_lc2, arr_lc2 = readraster(file2)  # actual - 1994
-    ds_lc3, arr_lc3 = readraster(file3)  # future - 1999
-    # ds_lc3, arr_lc3 = readraster(file3)  # future - 2004
-    # ds_lc3, arr_lc3 = readraster(file3)  # future - 2009
-    # ds_lc3, arr_lc3 = readraster(file3)  # future - 2014
+    ds_lc1, arr_lc1 = readraster(file1)  # 1989
+    ds_lc2, arr_lc2 = readraster(file2)  # 1994
+    ds_lc3, arr_lc3 = readraster(aux)  # actual
+    ds_lc9, arr_lc9 = readraster(file3)  # future
 
     # variaveis
     ds_lc4, arr_lc4 = readraster(cbd)
@@ -212,8 +209,8 @@ def allRulesCreationNewDeli():
     ds_lc7, arr_lc7 = readraster(pop01)
     ds_lc8, arr_lc8 = readraster(slope)
 
-    actual_data = deepcopy(arr_lc2)
-    future_data = deepcopy(arr_lc3)
+    actual_data = deepcopy(arr_lc3)
+    future_data = deepcopy(arr_lc9)
 
     row, col = (ds_lc1.RasterYSize, ds_lc1.RasterXSize)
 
@@ -222,46 +219,47 @@ def allRulesCreationNewDeli():
     all_rulesIII = []
     all_rulesIV = []
     variaveis = []
+    grouped_rules = []
 
-    print(col)
-    print(row)
+    rasterData = [arr_lc1, arr_lc2]
+    auxvar = 0
 
-    for i in range(0, row):
-        for j in range(0, col):
-            if i != 0 and j != 0 and i != row - 1 and j != col - 1:
-                # Variáveis endógenas
-                pactualNorte = arr_lc1[i - 1, j]
-                pactualSul = arr_lc1[i + 1, j]
-                pactualLeste = arr_lc1[i, j + 1]
-                pactualOeste = arr_lc1[i, j - 1]
-                pactual = arr_lc1[i, j]
+    for k in rasterData:
+        auxvar = auxvar + 1
+        for i in range(0, row):
+            for j in range(0, col):
+                if i != 0 and j != 0 and i != row - 1 and j != col - 1:
+                    # Variáveis endógenas
+                    pactualNorte = k[i - 1, j]
+                    pactualSul = k[i + 1, j]
+                    pactualLeste = k[i, j + 1]
+                    pactualOeste = k[i, j - 1]
+                    pactual = k[i, j]  # target variable
 
-                # Variáveis exógenas
-                pcbd = arr_lc4[i, j]
-                proad = arr_lc5[i, j]
-                prestricted = arr_lc6[i, j]
-                ppop = arr_lc7[i, j]
-                pslope = arr_lc8[i, j]
+                    # Variáveis exógenas
+                    pcbd = arr_lc4[i, j]
+                    proad = arr_lc5[i, j]
+                    prestricted = arr_lc6[i, j]
+                    ppop = arr_lc7[i, j]
+                    pslope = arr_lc8[i, j]
 
-                # pfuture = arr_lc2[i, j]
+                    rules = [pactualNorte, pactualSul, pactualLeste, pactualOeste,
+                             pcbd, proad, prestricted, ppop, pslope, pactual]
 
-                rules = [pactualNorte, pactualSul, pactualLeste, pactualOeste, pactual,
-                         pcbd, proad, prestricted, ppop, pslope]
-                # print(rules)
-                vedic = [pcbd, proad, prestricted, ppop, pslope]
+                    if auxvar == 1:
+                        vedic = [pcbd, proad, prestricted, ppop, pslope]
+                        variaveis.append(vedic)
 
-                variaveis.append(vedic)
+                    if i < 500 and j < 500:
+                        all_rulesII.append(rules)
+                    if i < 500 and j >= 500:
+                        all_rulesI.append(rules)
+                    if i >= 500 and j < 500:
+                        all_rulesIII.append(rules)
+                    if i >= 500 and j >= 500:
+                        all_rulesIV.append(rules)
 
-                if i < 500 and j < 500:
-                    all_rulesII.append(rules)
-                if i < 500 and j >= 500:
-                    all_rulesI.append(rules)
-                if i >= 500 and j < 500:
-                    all_rulesIII.append(rules)
-                if i >= 500 and j >= 500:
-                    all_rulesIV.append(rules)
-
-    grouped_rules = [all_rulesI, all_rulesII, all_rulesIII, all_rulesIV]
+        grouped_rules = [all_rulesI, all_rulesII, all_rulesIII, all_rulesIV]
 
     #
     #

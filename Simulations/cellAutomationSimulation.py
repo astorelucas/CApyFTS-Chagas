@@ -345,7 +345,7 @@ def read_Data():
     return hd, hdl
 
 
-def caSimulationNewDelhi(actual, future, rows, cols, mtemp, vedic):
+def caSimulationNewDelhi(actual, rows, cols, mtemp, vedic):
     predicted = deepcopy(actual)
     k = 0
 
@@ -353,7 +353,7 @@ def caSimulationNewDelhi(actual, future, rows, cols, mtemp, vedic):
         print(i)
         for j in range(cols):
             if i != 0 and j != 0 and i != rows - 1 and j != cols - 1:
-                future_value = nextState_Predict_newdelhi(actual, future,
+                future_value = nextState_Predict_newdelhi(actual,
                                                           i, j,
                                                           mtemp, vedic,
                                                           k)  # Pego a base de teste fuzzifico e faço a previsão de t+1
