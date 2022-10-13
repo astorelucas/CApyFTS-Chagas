@@ -45,23 +45,13 @@ def nextState_Predict_newdelhi(grid, i, j, mtemp, vedic, k):
                     grid[i + 1, j],
                     grid[i, j + 1],
                     grid[i, j - 1],
-                    grid[i, j],
                     vedic[k][0],  # pcbd
                     vedic[k][1],  # proad
                     vedic[k][2],  # restricted
                     vedic[k][3],  # ppop
-                    vedic[k][4]  # pslope
+                    vedic[k][4],  # pslope
+                    grid[i, j]
                     ]])
-    k = k + 1
-
-    # values = cd.astype('float32')
-    # # normalize features
-    # scaler = MinMaxScaler(feature_range=(0, 1))
-    # values = scaler.fit_transform(values)
-    # values = values.reshape((values.shape[0], 1, values.shape[1]))
-
-    # rules = [pactualNorte, pactualSul, pactualLeste, pactualOeste, pactual,
-    #          pcbd, proad, prestricted, ppop, pslope, pfuture]
 
     df = pd.DataFrame(cd, columns=['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10'])
 

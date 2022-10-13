@@ -14,9 +14,11 @@ def build_train_NewDelhi(all_rules):
     dataset = []
 
     for rules in all_rules:
+
         aux = pd.DataFrame(rules, columns=['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10'])
 
-        aux = aux.drop_duplicates() # eu dropei os duplicated pq não to fazendo o weighted por causa do rio..
+        # eu dropei os duplicated pq não to fazendo o weighted por causa do rio..
+        aux = aux.drop_duplicates()
 
         dataset.append(aux)
 

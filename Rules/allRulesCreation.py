@@ -166,6 +166,12 @@ def allRulesCreation_xlsx(historical_data, historical_data_larvas, train_days):
 
     return all_rules, all_rulesL
 
+def readraster(file):
+    dataSource = gdal.Open(file)
+    band = dataSource.GetRasterBand(1)
+    band = band.ReadAsArray()
+
+    return (dataSource, band)
 
 def allRulesCreationNewDeli():
     # Assign the directory where files are located
@@ -175,32 +181,22 @@ def allRulesCreationNewDeli():
     file1 = "actual_1989_50.tif"
     file2 = "actual_1994_50.tif"
 
-    aux = "actual_2009_50.tif"
-    file3 = "actual_2014_50.tif"
+    # Actual mapa at time t.
+    # It will be used to predict map at t+1
+    atual = "actual_2014_50.tif"
 
     # Input all the parameters
     cbd = "cbddist_50.tif"
     road = "roaddist_50.tif"
     restricted = "restricted_50.tif"
-    # pop02 = "den1991_c.tif"
-    # pop01 = "den2001_50.tif"
     pop01 = "den2019_50.tif"
-    # pop19 = "den2019.tif"
-    # pop24 = "den2024.tif"
     slope = "slope_50.tif"
-
-    def readraster(file):
-        dataSource = gdal.Open(file)
-        band = dataSource.GetRasterBand(1)
-        band = band.ReadAsArray()
-
-        return (dataSource, band)
 
     # mapas
     ds_lc1, arr_lc1 = readraster(file1)  # 1989
     ds_lc2, arr_lc2 = readraster(file2)  # 1994
-    ds_lc3, arr_lc3 = readraster(aux)  # actual
-    ds_lc9, arr_lc9 = readraster(file3)  # future
+    ds_lc3, arr_lc3 = readraster(atual)  # actual
+    actual_data = deepcopy(arr_lc3)
 
     # variaveis
     ds_lc4, arr_lc4 = readraster(cbd)
@@ -209,9 +205,6 @@ def allRulesCreationNewDeli():
     ds_lc7, arr_lc7 = readraster(pop01)
     ds_lc8, arr_lc8 = readraster(slope)
 
-    actual_data = deepcopy(arr_lc3)
-    future_data = deepcopy(arr_lc9)
-
     row, col = (ds_lc1.RasterYSize, ds_lc1.RasterXSize)
 
     all_rulesI = []
@@ -219,7 +212,6 @@ def allRulesCreationNewDeli():
     all_rulesIII = []
     all_rulesIV = []
     variaveis = []
-    grouped_rules = []
 
     rasterData = [arr_lc1, arr_lc2]
     auxvar = 0
@@ -259,76 +251,6 @@ def allRulesCreationNewDeli():
                     if i >= 500 and j >= 500:
                         all_rulesIV.append(rules)
 
-        grouped_rules = [all_rulesI, all_rulesII, all_rulesIII, all_rulesIV]
+    grouped_rules = [all_rulesI, all_rulesII, all_rulesIII, all_rulesIV]
 
-    #
-    #
-    # for x in range(0, row):
-    #     for y in range(0, col):
-    #         if x != 0 and y != 0 and x != row-1 and y != col-1:
-    #             # Variáveis endógenas
-    #             pactualNorte = arr_lc2[x - 1, y]
-    #             pactualSul = arr_lc2[x + 1, y]
-    #             pactualLeste = arr_lc2[x, y + 1]
-    #             pactualOeste = arr_lc2[x, y - 1]
-    #             pactual = arr_lc2[x, y]
-    #
-    #             # Variáveis exógenas
-    #             pcbd = arr_lc4[x, y]
-    #             proad = arr_lc5[x, y]
-    #             #prestricted = arr_lc6[x, y]
-    #             ppop = arr_lc7[x, y]
-    #             pslope = arr_lc8[x, y]
-    #
-    #             pfuture = arr_lc3[x, y]
-    #
-    #             rules = [pactualNorte, pactualSul, pactualLeste, pactualOeste, pactual,
-    #                      pcbd, proad, ppop, pslope, pfuture]
-    #
-    #             vedic = [arr_lc4, arr_lc5, arr_lc7, arr_lc8]
-    #
-    #             all_rules.append(rules)
-    #
-    # print(len(all_rules))
-    # dataset = pd.DataFrame(all_rules, columns=['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10'])
-    # dataset.to_numpy()
-    #
-    # # load dataset
-    # values = dataset
-    # # # integer encode direction
-    # # encoder = LabelEncoder()
-    # # values[:, 4] = encoder.fit_transform(values[:, 4])
-    # # ensure all data is float
-    # values = values.astype('float32')
-    # # normalize features
-    # scaler = MinMaxScaler(feature_range=(0, 1))
-    # scaled = scaler.fit_transform(values)
-    # # print(values[0])
-    # # frame as supervised learning
-    # # all_rules = series_to_supervised(scaled, 1, 1)
-
-    return grouped_rules, actual_data, future_data, row, col, variaveis, ds_lc1
-
-
-def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
-    n_vars = 1 if type(data) is list else data.shape[1]
-    df = DataFrame(data)
-    cols, names = list(), list()
-    # input sequence (t-n, ... t-1)
-    for i in range(n_in, 0, -1):
-        cols.append(df.shift(i))
-        names += [('var%d(t-%d)' % (j + 1, i)) for j in range(n_vars)]
-    # forecast sequence (t, t+1, ... t+n)
-    for i in range(0, n_out):
-        cols.append(df.shift(-i))
-        if i == 0:
-            names += [('var%d(t)' % (j + 1)) for j in range(n_vars)]
-        else:
-            names += [('var%d(t+%d)' % (j + 1, i)) for j in range(n_vars)]
-    # put it all together
-    agg = concat(cols, axis=1)
-    agg.columns = names
-    # drop rows with NaN values
-    if dropnan:
-        agg.dropna(inplace=True)
-    return agg
+    return grouped_rules, actual_data, row, col, variaveis, ds_lc1
